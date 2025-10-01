@@ -18,6 +18,18 @@ Su objetivo es que **estudiantes e interesados en ciencias ambientales** tengan 
 - Guardado de análisis en archivo CSV
 - Descarga de resultados para revisión posterior
 
+
+## 🖼️ Capturas de pantalla / Capturas de tela
+
+### Pantalla principal / Tela inicial
+![Pantalla principal](img/captura1.png)
+
+### Selección de color con referencia Munsell
+![Selección de color](img/captura2.png)
+
+### Interpretaciones automáticas del suelo
+![Interpretación](img/captura3.png)
+
 ---
 
 ## 📦 Instalación local / Instalação local
@@ -26,3 +38,4 @@ Su objetivo es que **estudiantes e interesados en ciencias ambientales** tengan 
    ```bash
    git clone https://github.com/claudialiliana/analisis-suelo-app.git
    cd analisis-suelo-app
+
