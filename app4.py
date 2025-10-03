@@ -169,9 +169,6 @@ TEXT_CONTENT = {
 }
 
 # ================================
-# INTERPRETACIONES DETALLADAS
-# ================================
-# ================================
 # INTERPRETACIONES DETALLADAS (ES/PT)
 # ================================
 INTERP = {
@@ -258,16 +255,22 @@ INTERP = {
 if "show_intro" not in st.session_state:
     st.session_state["show_intro"] = True
 
+# Idioma
 lang = st.sidebar.radio("🌍 Idioma / Language", ["es", "pt"], index=0)
 t = TEXT_CONTENT[lang]
 
-if st.session_state["show_intro"]:
+# Pantalla de bienvenida
+if st.session_state.get("show_intro", True):
     st.title(t["app_title"])
     st.markdown(t["intro"])
-    if st.button("🚀 Empezar" if lang=="es" else "🚀 Iniciar"):
+    if st.button("🚀 Comenzar análisis" if lang=="es" else "🚀 Iniciar análise"):
         st.session_state["show_intro"] = False
         st.rerun()
     st.stop()
+
+# Si ya pasó la intro, mostrar título general
+st.title(t["app_title"])
+st.markdown("👉 Selecciona tu opción comparando con la referencia:")
 
 # ================================
 # FUNCIÓN CARRUSEL
@@ -384,5 +387,6 @@ if ready:
     pdf_file = generar_pdf(lang, resumen_list, piezas, recs)
     with open(pdf_file, "rb") as f:
         st.download_button(t["pdf_button"], f, file_name=pdf_file, mime="application/pdf")
+
 
 
