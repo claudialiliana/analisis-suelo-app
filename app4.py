@@ -35,7 +35,13 @@ div.stButton > button:hover {
 }
 </style>
 """, unsafe_allow_html=True)
-
+# ================================
+# LOGO (sidebar)
+# ================================
+if os.path.exists("logo.png"):
+    st.sidebar.image("logo.png", use_container_width=True)
+else:
+    st.sidebar.markdown("**Kawsaypacha – Tierra Viva**")
 # ================================
 # TEXTOS
 # ================================
@@ -292,6 +298,7 @@ if ready:
     excel_file = generar_excel(lang, resumen_list, piezas, recs)
     with open(excel_file,"rb") as f:
         st.download_button(t["excel_button"], f, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 
 
 
