@@ -1,5 +1,5 @@
 import streamlit as st
-import os, csv
+import os, csv, glob
 from datetime import datetime
 from openpyxl import Workbook
 
@@ -45,6 +45,58 @@ else:
     st.sidebar.markdown("**Kawsaypacha – Tierra Viva**")
 
 # ================================
+# MAPEOS DE CARPETAS
+# ================================
+COLOR_FOLDER_MAP = {
+    "es": {
+        "rojo-intenso": "rojo-intenso",
+        "rojo-amarillento": "rojo-amarillento",
+        "amarillo": "amarillo",
+        "marrón": "marron",
+        "pardo-marrón": "pardo-marron",
+        "negro": "negro",
+        "gris": "gris",
+        "blanco": "blanco",
+    },
+    "pt": {
+        "vermelho-intenso": "rojo-intenso",
+        "vermelho-amarelado": "rojo-amarillento",
+        "amarelo": "amarillo",
+        "marrom": "marron",
+        "pardo-marrom": "pardo-marron",
+        "preto": "negro",
+        "cinza": "gris",
+        "branco": "blanco",
+    },
+}
+
+TEXTURE_FOLDER_MAP = {
+    "es": {"arcilloso": "arcilloso", "arenoso": "arenoso", "franco": "franco", "limoso": "limoso"},
+    "pt": {"argiloso": "arcilloso", "arenoso": "arenoso", "franco": "franco", "siltoso": "limoso"},
+}
+
+STRUCTURE_FOLDER_MAP = {
+    "es": {
+        "granular": "granular",
+        "migajosa": "migajosa",
+        "bloques": "bloques",
+        "prismatica-columnar": "prismatica-columnar",
+        "laminar": "laminar",
+        "masiva": "masiva",
+        "suelto": "suelto",
+    },
+    "pt": {
+        "granular": "granular",
+        "migajosa": "migajosa",
+        "blocos": "bloques",
+        "prismática-colunar": "prismatica-columnar",
+        "laminar": "laminar",
+        "maciça": "masiva",
+        "solto": "suelto",
+    },
+}
+
+# ================================
 # TEXTOS
 # ================================
 TEXT_CONTENT = {
@@ -54,13 +106,6 @@ TEXT_CONTENT = {
         "intro": """
 **Bienvenido/a a esta plataforma educativa para explorar el mundo del suelo de manera visual e interactiva.**
 Aquí podrás analizar algunas de sus principales características físicas y comprender cómo influyen en su interpretación.
-
-👉 Elige primero el **idioma que prefieras** y luego:
-1. **Sube una imagen de suelo** que quieras analizar.  
-2. **Selecciona sus características** (color, textura, estructura, humedad, raíces).  
-3. **Compara con las referencias visuales** que irán apareciendo en cada categoría.
-
-Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual” para comprender mejor el suelo. 🚀
 """,
         "upload_label": "📤 Subir imagen de suelo",
         "uploaded_caption": "📸 Imagen subida",
@@ -82,6 +127,8 @@ Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual�
         "color_opts": ["Seleccionar opción", "rojo-intenso", "rojo-amarillento", "amarillo", "marrón", "pardo-marrón", "negro", "gris", "blanco"],
         "texture_opts": ["Seleccionar opción", "arcilloso", "arenoso", "franco", "limoso"],
         "structure_opts": ["Seleccionar opción", "granular", "migajosa", "bloques", "prismatica-columnar", "laminar", "masiva", "suelto"],
+        "no_images_msg": "No se encontraron imágenes en la carpeta",
+        "no_folder_msg": "No existe carpeta de referencia para",
     },
    "pt": {
         "app_title": "🌱 Análise Visual de Solos",
@@ -89,13 +136,6 @@ Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual�
         "intro": """
 **Bem-vindo(a) a esta plataforma educativa para explorar o mundo do solo de forma visual e interativa.**
 Aqui você poderá analisar algumas de suas principais características físicas e entender como elas influenciam na interpretação do solo.
-
-👉 Primeiro, escolha o **idioma de sua preferência** e depois:
-1. **Envie uma imagem do solo** que deseja analisar.  
-2. **Selecione suas características** (cor, textura, estrutura, umidade, raízes).  
-3. **Compare com as referências visuais** que aparecerão em cada categoria.
-
-Você terá uma experiência guiada passo a passo, como uma “lupa virtual” para compreender melhor o solo. 🚀
 """,
         "upload_label": "📤 Enviar imagem do solo",
         "uploaded_caption": "📸 Imagem enviada",
@@ -117,6 +157,8 @@ Você terá uma experiência guiada passo a passo, como uma “lupa virtual” p
         "color_opts": ["Selecionar opção", "vermelho-intenso", "vermelho-amarelado", "amarelo", "marrom", "pardo-marrom", "preto", "cinza", "branco"],
         "texture_opts": ["Selecionar opção", "argiloso", "arenoso", "franco", "siltoso"],
         "structure_opts": ["Selecionar opção", "granular", "migajosa", "blocos", "prismática-colunar", "laminar", "maciça", "solto"],
+        "no_images_msg": "Não foram encontradas imagens na pasta",
+        "no_folder_msg": "Não existe pasta de referência para",
     },
 }
 
@@ -200,23 +242,37 @@ INTERP = {
     },
 }
 
-
 # ================================
-# CONTROL DE PANTALLA INTRO
+# FUNCIÓN REFERENCIAS
 # ================================
-if "show_intro" not in st.session_state:
-    st.session_state["show_intro"] = True
+def mostrar_referencias(categoria: str, seleccion: str, lang_code: str):
+    if not seleccion or seleccion == TEXT_CONTENT[lang_code]["placeholder"]:
+        return
 
-lang = st.sidebar.radio("🌍 Idioma / Language", ["es", "pt"], index=0)
-t = TEXT_CONTENT[lang]
+    if categoria == "color":
+        carpeta = COLOR_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
+    elif categoria == "textura":
+        carpeta = TEXTURE_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
+    elif categoria == "forma-estructura":
+        carpeta = STRUCTURE_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
+    else:
+        carpeta = str(seleccion).lower()
 
-if st.session_state["show_intro"]:
-    st.title(t["app_title"])
-    st.markdown(t["intro"])
-    if st.button(t["start_btn"]):
-        st.session_state["show_intro"] = False
-        st.rerun()
-    st.stop()
+    base_path = os.path.join("referencias", categoria, carpeta)
+
+    if os.path.exists(base_path):
+        imagenes = sorted(
+            glob.glob(os.path.join(base_path, "*.png")) +
+            glob.glob(os.path.join(base_path, "*.jpg")) +
+            glob.glob(os.path.join(base_path, "*.jpeg"))
+        )
+        if imagenes:
+            for img_path in imagenes:
+                st.image(img_path, caption=f"{seleccion}", width=250)
+        else:
+            st.warning(f"{TEXT_CONTENT[lang_code]['no_images_msg']}: {base_path}")
+    else:
+        st.info(f"{TEXT_CONTENT[lang_code]['no_folder_msg']} «{seleccion}» → {base_path}")
 
 # ================================
 # FUNCIÓN: Generar Excel
@@ -249,6 +305,23 @@ def generar_excel(lang_code, resumen, interpretacion, recomendaciones):
     return out
 
 # ================================
+# CONTROL DE PANTALLA INTRO
+# ================================
+if "show_intro" not in st.session_state:
+    st.session_state["show_intro"] = True
+
+lang = st.sidebar.radio("🌍 Idioma / Language", ["es", "pt"], index=0)
+t = TEXT_CONTENT[lang]
+
+if st.session_state["show_intro"]:
+    st.title(t["app_title"])
+    st.markdown(t["intro"])
+    if st.button(t["start_btn"]):
+        st.session_state["show_intro"] = False
+        st.rerun()
+    st.stop()
+
+# ================================
 # APP
 # ================================
 st.title(t["app_title"])
@@ -257,9 +330,21 @@ uploaded_file = st.file_uploader(t["upload_label"], type=["jpg","jpeg","png"])
 if uploaded_file:
     st.image(uploaded_file, caption=t["uploaded_caption"], use_container_width=True)
 
+# Color
+st.markdown(f"**{t['select_phrase']}**")
 color = st.selectbox(t["color_label"], t["color_opts"])
+mostrar_referencias("color", color, lang)
+
+# Textura
+st.markdown(f"**{t['select_phrase']}**")
 textura = st.selectbox(t["texture_label"], t["texture_opts"])
+mostrar_referencias("textura", textura, lang)
+
+# Estructura
+st.markdown(f"**{t['select_phrase']}**")
 estructura = st.selectbox(t["aggregation_label"], t["structure_opts"])
+mostrar_referencias("forma-estructura", estructura, lang)
+
 humedad = st.selectbox(t["moisture_label"], t["moisture_opts"])
 raices = st.selectbox(t["roots_label"], t["roots_opts"])
 
