@@ -51,99 +51,48 @@ div.stButton > button:hover {
 """, unsafe_allow_html=True)
 
 # ================================
-# MAPEOS DE CARPETAS
-# ================================
-COLOR_FOLDER_MAP = {
-    "es": {
-        "rojo-intenso": "rojo-intenso",
-        "rojo-amarillento": "rojo-amarillento",
-        "amarillo": "amarillo",
-        "marrón": "marron",
-        "pardo-marrón": "pardo-marron",
-        "negro": "negro",
-        "gris": "gris",
-        "blanco": "blanco",
-    },
-    "pt": {
-        "vermelho-intenso": "rojo-intenso",
-        "vermelho-amarelado": "rojo-amarillento",
-        "amarelo": "amarillo",
-        "marrom": "marron",
-        "pardo-marrom": "pardo-marron",
-        "preto": "negro",
-        "cinza": "gris",
-        "branco": "blanco",
-    },
-}
-
-TEXTURE_FOLDER_MAP = {
-    "es": {"arcilloso": "arcilloso", "arenoso": "arenoso", "franco": "franco", "limoso": "limoso"},
-    "pt": {"argiloso": "arcilloso", "arenoso": "arenoso", "franco": "franco", "siltoso": "limoso"},
-}
-
-STRUCTURE_FOLDER_MAP = {
-    "es": {
-        "granular": "granular",
-        "migajosa": "migajosa",
-        "bloques": "bloques",
-        "prismatica-columnar": "prismatica-columnar",
-        "laminar": "laminar",
-        "masiva": "masiva",
-        "suelto": "suelto",
-    },
-    "pt": {
-        "granular": "granular",
-        "migajosa": "migajosa",
-        "blocos": "bloques",
-        "prismática-colunar": "prismatica-columnar",
-        "laminar": "laminar",
-        "maciça": "masiva",
-        "solto": "suelto",
-    },
-}
-
-# ================================
 # FUNCIÓN: Generar PDF
 # ================================
 def generar_pdf(lang_code, resumen, interpretacion, recomendaciones):
     pdf = FPDF()
     pdf.add_page()
 
-    font_path = os.path.join("fonts", "DejaVuSans.ttf")
-    if os.path.exists(font_path):
-        pdf.add_font("DejaVu", "", font_path, uni=True)
-        pdf.set_font("DejaVu", "", 12)
-    else:
-        pdf.set_font("Helvetica", "", 12)
+    # Fuente
+    pdf.set_font("Arial", "", 12)
 
+    # Logo
     if os.path.exists("logo.png"):
         pdf.image("logo.png", x=80, y=10, w=50)
         pdf.ln(35)
 
-    pdf.set_font("Helvetica", "B", 16)
+    # Título
+    pdf.set_font("Arial", "B", 16)
     pdf.cell(0, 10, "🌱 Análisis de Suelo" if lang_code=="es" else "🌱 Análise de Solo", ln=True, align="C")
 
-    pdf.set_font("Helvetica", "", 11)
+    pdf.set_font("Arial", "", 11)
     pdf.cell(0, 10, datetime.now().strftime("%d/%m/%Y %H:%M"), ln=True, align="C")
     pdf.ln(10)
 
-    pdf.set_font("Helvetica", "B", 13)
+    # Resumen
+    pdf.set_font("Arial", "B", 13)
     pdf.cell(0, 10, "1️⃣ Resumen" if lang_code=="es" else "1️⃣ Resumo", ln=True)
-    pdf.set_font("Helvetica", "", 11)
+    pdf.set_font("Arial", "", 11)
     for item in resumen:
         pdf.multi_cell(0, 8, f"- {item}")
     pdf.ln(5)
 
-    pdf.set_font("Helvetica", "B", 13)
+    # Interpretación
+    pdf.set_font("Arial", "B", 13)
     pdf.cell(0, 10, "2️⃣ Interpretación técnica" if lang_code=="es" else "2️⃣ Interpretação técnica", ln=True)
-    pdf.set_font("Helvetica", "", 11)
+    pdf.set_font("Arial", "", 11)
     for parrafo in interpretacion:
         pdf.multi_cell(0, 8, parrafo)
     pdf.ln(5)
 
-    pdf.set_font("Helvetica", "B", 13)
+    # Recomendaciones
+    pdf.set_font("Arial", "B", 13)
     pdf.cell(0, 10, "3️⃣ Recomendaciones" if lang_code=="es" else "3️⃣ Recomendações", ln=True)
-    pdf.set_font("Helvetica", "", 11)
+    pdf.set_font("Arial", "", 11)
     for rec in recomendaciones:
         pdf.multi_cell(0, 8, rec)
 
@@ -160,12 +109,11 @@ else:
     st.sidebar.markdown("**Kawsaypacha – Tierra Viva**")
 
 # ================================
-# TEXTOS
+# TEXTOS MULTILINGÜES
 # ================================
 TEXT_CONTENT = {
     "es": {
         "app_title": "🌱 Análisis Visual de Suelos",
-        "start_btn": "🚀 Comenzar análisis",
         "intro": """
 **Bienvenido/a a esta plataforma educativa para explorar el mundo del suelo de manera visual e interactiva.**
 Aquí podrás analizar algunas de sus principales características físicas y comprender cómo influyen en su interpretación.
@@ -174,8 +122,6 @@ Aquí podrás analizar algunas de sus principales características físicas y co
 1. **Sube una imagen de suelo** que quieras analizar.  
 2. **Selecciona sus características** (color, textura, estructura, humedad, raíces).  
 3. **Compara con las referencias visuales** que irán apareciendo en cada categoría.
-
-Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual” para comprender mejor el suelo. 🚀
 """,
         "upload_label": "📤 Subir imagen de suelo",
         "uploaded_caption": "📸 Imagen subida",
@@ -195,12 +141,11 @@ Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual�
         "color_opts": ["Seleccionar opción","rojo-intenso","rojo-amarillento","amarillo","marrón","pardo-marrón","negro","gris","blanco"],
         "texture_opts": ["Seleccionar opción","arcilloso","arenoso","franco","limoso"],
         "structure_opts": ["Seleccionar opción","granular","migajosa","bloques","prismatica-columnar","laminar","masiva","suelto"],
-        "no_images_msg": "⚠️ No se encontraron imágenes en la carpeta",
-        "no_folder_msg": "ℹ️ No existe carpeta de referencias para",
+        "no_images_msg": "No se encontraron imágenes en la carpeta",
+        "no_folder_msg": "No existe carpeta de referencia para",
     },
     "pt": {
         "app_title": "🌱 Análise Visual de Solos",
-        "start_btn": "🚀 Iniciar análise",
         "intro": """
 **Bem-vindo(a) a esta plataforma educativa para explorar o mundo do solo de forma visual e interativa.**
 Aqui você poderá analisar algumas de suas principais características físicas e entender como elas influenciam na interpretação do solo.
@@ -209,8 +154,6 @@ Aqui você poderá analisar algumas de suas principais características físicas
 1. **Envie uma imagem do solo** que deseja analisar.  
 2. **Selecione suas características** (cor, textura, estrutura, umidade, raízes).  
 3. **Compare com as referências visuais** que aparecerão em cada categoria.
-
-Você terá uma experiência guiada passo a passo, como uma “lupa virtual” para compreender melhor o solo. 🚀
 """,
         "upload_label": "📤 Enviar imagem do solo",
         "uploaded_caption": "📸 Imagem enviada",
@@ -230,13 +173,29 @@ Você terá uma experiência guiada passo a passo, como uma “lupa virtual” p
         "color_opts": ["Selecionar opção","vermelho-intenso","vermelho-amarelado","amarelo","marrom","pardo-marrom","preto","cinza","branco"],
         "texture_opts": ["Selecionar opção","argiloso","arenoso","franco","siltoso"],
         "structure_opts": ["Selecionar opção","granular","migajosa","blocos","prismática-colunar","laminar","maciça","solto"],
-        "no_images_msg": "⚠️ Nenhuma imagem encontrada na pasta",
-        "no_folder_msg": "ℹ️ Não existe pasta de referências para",
+        "no_images_msg": "Não foram encontradas imagens na pasta",
+        "no_folder_msg": "Não existe pasta de referência para",
     },
 }
 
 # ================================
-# CONTROL DE PANTALLA INTRO
+# MAPEOS DE CARPETAS PARA REFERENCIAS
+# ================================
+COLOR_FOLDER_MAP = {
+    "es": {"rojo-intenso":"rojo-intenso","rojo-amarillento":"rojo-amarillento","amarillo":"amarillo","marrón":"marron","pardo-marrón":"pardo-marron","negro":"negro","gris":"gris","blanco":"blanco"},
+    "pt": {"vermelho-intenso":"rojo-intenso","vermelho-amarelado":"rojo-amarillento","amarelo":"amarillo","marrom":"marron","pardo-marrom":"pardo-marron","preto":"negro","cinza":"gris","branco":"blanco"}
+}
+TEXTURE_FOLDER_MAP = {
+    "es":{"arcilloso":"arcilloso","arenoso":"arenoso","franco":"franco","limoso":"limoso"},
+    "pt":{"argiloso":"arcilloso","arenoso":"arenoso","franco":"franco","siltoso":"limoso"}
+}
+STRUCTURE_FOLDER_MAP = {
+    "es":{"granular":"granular","migajosa":"migajosa","bloques":"bloques","prismatica-columnar":"prismatica-columnar","laminar":"laminar","masiva":"masiva","suelto":"suelto"},
+    "pt":{"granular":"granular","migajosa":"migajosa","blocos":"bloques","prismática-colunar":"prismatica-columnar","laminar":"laminar","maciça":"masiva","solto":"suelto"}
+}
+
+# ================================
+# CONTROL INTRO
 # ================================
 if "show_intro" not in st.session_state:
     st.session_state["show_intro"] = True
@@ -247,7 +206,7 @@ t = TEXT_CONTENT[lang]
 if st.session_state["show_intro"]:
     st.title(t["app_title"])
     st.markdown(t["intro"])
-    if st.button(t["start_btn"]):
+    if st.button("➡️ Iniciar" if lang=="es" else "➡️ Iniciar análise"):
         st.session_state["show_intro"] = False
         st.rerun()
     st.stop()
@@ -269,24 +228,18 @@ def mostrar_referencias(categoria: str, seleccion: str, lang_code: str):
 
     base_path = os.path.join("referencias", categoria, carpeta)
     if os.path.exists(base_path):
-        imagenes = sorted(
-            glob.glob(os.path.join(base_path, "*.png")) +
-            glob.glob(os.path.join(base_path, "*.jpg")) +
-            glob.glob(os.path.join(base_path, "*.jpeg"))
-        )
+        imagenes = sorted(glob.glob(os.path.join(base_path,"*.png"))+glob.glob(os.path.join(base_path,"*.jpg"))+glob.glob(os.path.join(base_path,"*.jpeg")))
         if imagenes:
             key_carousel = f"carousel_{categoria}_{seleccion}"
             if key_carousel not in st.session_state:
                 st.session_state[key_carousel] = 0
-
-            col1, col2, col3 = st.columns([1, 3, 1])
+            col1,col2,col3 = st.columns([1,3,1])
             with col1:
                 if st.button("⬅️", key=f"prev_{key_carousel}"):
-                    st.session_state[key_carousel] = (st.session_state[key_carousel] - 1) % len(imagenes)
+                    st.session_state[key_carousel] = (st.session_state[key_carousel]-1)%len(imagenes)
             with col3:
                 if st.button("➡️", key=f"next_{key_carousel}"):
-                    st.session_state[key_carousel] = (st.session_state[key_carousel] + 1) % len(imagenes)
-
+                    st.session_state[key_carousel] = (st.session_state[key_carousel]+1)%len(imagenes)
             img_path = imagenes[st.session_state[key_carousel]]
             st.image(img_path, caption=f"{seleccion} ({st.session_state[key_carousel]+1}/{len(imagenes)})", width=300)
         else:
@@ -303,9 +256,16 @@ uploaded_file = st.file_uploader(t["upload_label"], type=["jpg","jpeg","png"])
 if uploaded_file:
     st.image(uploaded_file, caption=t["uploaded_caption"], use_container_width=True)
 
+# Selectores con carrusel
 color = st.selectbox(t["color_label"], t["color_opts"])
+mostrar_referencias("color", color, lang)
+
 textura = st.selectbox(t["texture_label"], t["texture_opts"])
+mostrar_referencias("textura", textura, lang)
+
 estructura = st.selectbox(t["aggregation_label"], t["structure_opts"])
+mostrar_referencias("forma-estructura", estructura, lang)
+
 humedad = st.selectbox(t["moisture_label"], t["moisture_opts"])
 raices = st.selectbox(t["roots_label"], t["roots_opts"])
 
@@ -344,10 +304,16 @@ if ready:
     if not recs:
         recs.append("✅ Mantener buenas prácticas de manejo.")
 
+    # Mostrar interpretación y recomendaciones
+    st.subheader(t["interpret_block_title"])
+    for p in piezas: st.info(p)
+
+    st.subheader(t["recs_title"])
+    for r in recs: st.warning(r)
+
     # PDF
     pdf_file = generar_pdf(lang, resumen_list, piezas, recs)
     with open(pdf_file,"rb") as f:
         st.download_button(t["pdf_button"], f, file_name=pdf_file, mime="application/pdf", use_container_width=True)
-
 
 
