@@ -97,6 +97,60 @@ else:
     st.sidebar.markdown("**Kawsaypacha – Tierra Viva**")
 
 # ================================
+# MAPEOS DE CARPETAS (sin tildes)
+# ================================
+COLOR_FOLDER_MAP = {
+    "es": {
+        "rojo-intenso": "rojo-intenso",
+        "rojo-amarillento": "rojo-amarillento",
+        "amarillo": "amarillo",
+        "marrón": "marron",
+        "pardo-marrón": "pardo-marron",
+        "negro": "negro",
+        "gris": "gris",
+        "blanco": "blanco",
+    },
+    "pt": {
+        "vermelho-intenso": "rojo-intenso",
+        "vermelho-amarelado": "rojo-amarillento",
+        "amarelo": "amarillo",
+        "marrom": "marron",
+        "pardo-marrom": "pardo-marron",
+        "preto": "negro",
+        "cinza": "gris",
+        "branco": "blanco",
+    },
+}
+
+TEXTURE_FOLDER_MAP = {
+    "es": {"arcilloso": "arcilloso", "arenoso": "arenoso", "franco": "franco", "limoso": "limoso"},
+    "pt": {"argiloso": "arcilloso", "arenoso": "arenoso", "franco": "franco", "siltoso": "limoso"},
+}
+
+STRUCTURE_FOLDER_MAP = {
+    "es": {
+        "granular": "granular",
+        "migajosa": "migajosa",
+        "bloques": "bloques",
+        "prismatica-columnar": "prismatica-columnar",
+        "laminar": "laminar",
+        "masiva": "masiva",
+        "suelto": "suelto",
+    },
+    "pt": {
+        "granular": "granular",
+        "migajosa": "migajosa",
+        "blocos": "bloques",                 # mapea a carpeta 'bloques'
+        "prismática-colunar": "prismatica-columnar",
+        "laminar": "laminar",
+        "maciça": "masiva",
+        "solto": "suelto",
+    },
+}
+
+
+
+# ================================
 # TEXTOS APP (ES/PT)
 # ================================
 TEXT_CONTENT = {
@@ -412,6 +466,7 @@ if ready:
     pdf_file = generar_pdf(lang, resumen_list, piezas, recs)
     with open(pdf_file, "rb") as f:
         st.download_button(t["pdf_button"], f, file_name=pdf_file, mime="application/pdf")
+
 
 
 
