@@ -2,11 +2,10 @@ pandas
 numpy
 Pillow
 opencv-python-headless
-fpdf
-fpdf2
 streamlit==1.39.0
 fpdf==1.7.2
 Pillow==10.2.0
+
 
 
 
