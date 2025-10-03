@@ -94,12 +94,31 @@ STRUCTURE_FOLDER_MAP = {
         "solto": "suelto",
     },
 }
-
 # ================================
-# TEXTOS POR IDIOMA
+# LOGO (sidebar)
+# ================================
+if os.path.exists("logo.png"):
+    st.sidebar.image("logo.png", use_container_width=True)
+else:
+    st.sidebar.markdown("**Kawsaypacha – Tierra Viva**")
+# ================================
+# ================================
+# TEXTOS
 # ================================
 TEXT_CONTENT = {
     "es": {
+        "app_title": "🌱 Análisis Visual de Suelos",
+        "intro": """
+**Bienvenido/a a esta plataforma educativa para explorar el mundo del suelo de manera visual e interactiva.**
+Aquí podrás analizar algunas de sus principales características físicas y comprender cómo influyen en su interpretación.
+
+👉 Elige primero el **idioma que prefieras** y luego:
+1. **Sube una imagen de suelo** que quieras analizar.  
+2. **Selecciona sus características** (color, textura, estructura, humedad, raíces).  
+3. **Compara con las referencias visuales** que irán apareciendo en cada categoría.
+
+Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual” para comprender mejor el suelo. 🚀
+""",
         "app_title": "🌱 Análisis Visual de Suelos",
         "upload_label": "📤 Subir imagen de suelo",
         "uploaded_caption": "📸 Imagen subida",
@@ -125,6 +144,18 @@ TEXT_CONTENT = {
         "no_folder_msg": "No existe carpeta de referencia para",
     },
     "pt": {
+        "app_title": "🌱 Análise Visual de Solos",
+        "intro": """
+**Bem-vindo(a) a esta plataforma educativa para explorar o mundo do solo de forma visual e interativa.**
+Aqui você poderá analisar algumas de suas principais características físicas e entender como elas influenciam na interpretação do solo.
+
+👉 Primeiro, escolha o **idioma de sua preferência** e depois:
+1. **Envie uma imagem do solo** que deseja analisar.  
+2. **Selecione suas características** (cor, textura, estrutura, umidade, raízes).  
+3. **Compare com as referências visuais** que aparecerão em cada categoria.
+
+Você terá uma experiência guiada passo a passo, como uma “lupa virtual” para compreender melhor o solo. 🚀
+""",
         "app_title": "🌱 Análise Visual de Solos",
         "upload_label": "📤 Enviar imagem do solo",
         "uploaded_caption": "📸 Imagem enviada",
@@ -376,6 +407,7 @@ if ready:
     pdf_file = generar_pdf(lang,resumen_list,piezas,recs)
     with open(pdf_file,"rb") as f:
         st.download_button(t["pdf_button"],f,file_name=pdf_file,mime="application/pdf")
+
 
 
 
