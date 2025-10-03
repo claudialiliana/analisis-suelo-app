@@ -436,14 +436,17 @@ ready = (
 )
 
 if ready:
-    # RESUMEN
-    st.markdown(f"<div class='box-section'><h3>{t['summary_title']}</h3>", unsafe_allow_html=True)
-    st.write(f"- {t['color_label']}: **{color}**")
-    st.write(f"- {t['texture_label']}: **{textura}**")
-    st.write(f"- {t['aggregation_label']}: **{estructura}**")
-    st.write(f"- {t['moisture_label']}: **{humedad}**")
-    st.write(f"- {t['roots_label']}: **{raices}**")
-    st.markdown("</div>", unsafe_allow_html=True)
+    resumen_list = [
+        f"{t['color_label']}: {color}",
+        f"{t['texture_label']}: {textura}",
+        f"{t['aggregation_label']}: {estructura}",
+        f"{t['moisture_label']}: {humedad}",
+        f"{t['roots_label']}: {raices}",
+    ]
+    pdf_file = generar_pdf(lang, resumen_list, piezas, recs)
+    with open(pdf_file,"rb") as f:
+        st.download_button(t["pdf_button"], f, file_name=pdf_file, mime="application/pdf")
+
 
     # INTERPRETACIÓN TÉCNICA
     st.markdown(f"<div class='box-section'><h3>{t['interpret_block_title']}</h3>", unsafe_allow_html=True)
@@ -495,59 +498,55 @@ if ready:
     # ================================
     # Generar PDF (solo texto)
     # ================================
-    def generar_pdf(lang_code, resumen, interpretacion, recomendaciones):
-        pdf = FPDF()
-        pdf.add_page()
-        # Logo
-        if os.path.exists("logo.png"):
-            pdf.image("logo.png", x=80, y=10, w=50)
-            pdf.ln(35)
-        # Título y fecha
-        pdf.set_font("Arial", "B", 16)
-        titulo = TEXT_CONTENT[lang_code]["title_pdf"]
-        pdf.cell(0, 10, titulo, ln=True, align="C")
-        pdf.set_font("Arial", "", 11)
-        pdf.cell(0, 8, datetime.now().strftime("%d/%m/%Y %H:%M"), ln=True, align="C")
-        pdf.ln(6)
+   def generar_pdf(lang_code, resumen, interpretacion, recomendaciones):
+    pdf = FPDF()
+    pdf.add_page()
 
-        # Resumen
-        pdf.set_font("Arial", "B", 13)
-        pdf.cell(0, 10, TEXT_CONTENT[lang_code]["summary_title"].split(' ',1)[1], ln=True)
-        pdf.set_font("Arial", "", 11)
-        for linea in resumen:
-            pdf.multi_cell(0, 7, linea)
-        pdf.ln(2)
+    # === Fuente DejaVu para UTF-8 ===
+    # Streamlit Cloud suele traerla instalada, si no, súbela a tu repo
+    pdf.add_font("DejaVu", "", fname="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", uni=True)
+    pdf.set_font("DejaVu", "", 12)
 
-        # Interpretación
-        pdf.set_font("Arial", "B", 13)
-        pdf.cell(0, 10, TEXT_CONTENT[lang_code]["interpret_block_title"].split(' ',1)[1], ln=True)
-        pdf.set_font("Arial", "", 11)
-        for parrafo in interpretacion:
-            if parrafo:
-                pdf.multi_cell(0, 7, parrafo)
-        pdf.ln(2)
+    # === Logo (si existe en el repo) ===
+    if os.path.exists("logo.png"):
+        pdf.image("logo.png", x=80, y=10, w=50)
+        pdf.ln(35)
 
-        # Recomendaciones
-        pdf.set_font("Arial", "B", 13)
-        pdf.cell(0, 10, TEXT_CONTENT[lang_code]["recs_title"].split(' ',1)[1], ln=True)
-        pdf.set_font("Arial", "", 11)
-        for rec in recomendaciones:
-            pdf.multi_cell(0, 7, f"- {rec}")
+    # === Título ===
+    pdf.set_font("DejaVu", "", 16)
+    pdf.cell(0, 10, "🌱 Análisis de Suelo" if lang_code=="es" else "🌱 Análise de Solo", ln=True, align="C")
 
-        out = "analisis_suelo.pdf" if lang_code == "es" else "analise_solo.pdf"
-        pdf.output(out)
-        return out
+    pdf.set_font("DejaVu", "", 11)
+    pdf.cell(0, 10, datetime.now().strftime("%d/%m/%Y %H:%M"), ln=True, align="C")
+    pdf.ln(10)
 
-    resumen_list = [
-        f"- {t['color_label']}: {color}",
-        f"- {t['texture_label']}: {textura}",
-        f"- {t['aggregation_label']}: {estructura}",
-        f"- {t['moisture_label']}: {humedad}",
-        f"- {t['roots_label']}: {raices}",
-    ]
-    pdf_file = generar_pdf(lang, resumen_list, piezas, recs)
-    with open(pdf_file, "rb") as f:
-        st.download_button(t["pdf_button"], f, file_name=pdf_file, mime="application/pdf", use_container_width=True)
+    # === Resumen ===
+    pdf.set_font("DejaVu", "B", 13)
+    pdf.cell(0, 10, "1️⃣ Resumen" if lang_code=="es" else "1️⃣ Resumo", ln=True)
+    pdf.set_font("DejaVu", "", 11)
+    for item in resumen:
+        pdf.multi_cell(0, 8, f"- {item}")
+    pdf.ln(5)
+
+    # === Interpretación ===
+    pdf.set_font("DejaVu", "B", 13)
+    pdf.cell(0, 10, "2️⃣ Interpretación técnica" if lang_code=="es" else "2️⃣ Interpretação técnica", ln=True)
+    pdf.set_font("DejaVu", "", 11)
+    for parrafo in interpretacion:
+        pdf.multi_cell(0, 8, parrafo)
+    pdf.ln(5)
+
+    # === Recomendaciones ===
+    pdf.set_font("DejaVu", "B", 13)
+    pdf.cell(0, 10, "3️⃣ Recomendaciones" if lang_code=="es" else "3️⃣ Recomendações", ln=True)
+    pdf.set_font("DejaVu", "", 11)
+    for rec in recomendaciones:
+        pdf.multi_cell(0, 8, rec)
+
+    # === Guardar PDF ===
+    out = "analisis_suelo.pdf"
+    pdf.output(out)
+    return out
 
 # ================================
 # Descarga CSV en sidebar
@@ -557,4 +556,5 @@ with st.sidebar:
     if os.path.exists(file_csv) and os.path.getsize(file_csv) > 0:
         with open(file_csv, "rb") as f:
             st.download_button(TEXT_CONTENT[lang]["download_all"], f, file_name=file_csv, mime="text/csv", use_container_width=True)
+
 
