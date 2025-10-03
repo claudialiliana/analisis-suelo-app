@@ -498,21 +498,26 @@ if ready:
     # ================================
     # Generar PDF (solo texto)
     # ================================
-   def generar_pdf(lang_code, resumen, interpretacion, recomendaciones):
+   # ================================
+# FUNCIÓN: Generar PDF con fuente incluida
+# ================================
+def generar_pdf(lang_code, resumen, interpretacion, recomendaciones):
     pdf = FPDF()
     pdf.add_page()
 
-    # === Fuente DejaVu para UTF-8 ===
-    # Streamlit Cloud suele traerla instalada, si no, súbela a tu repo
-    pdf.add_font("DejaVu", "", fname="/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", uni=True)
+    # Ruta relativa a la fuente dentro del repo
+    font_path = os.path.join("fonts", "DejaVuSans.ttf")
+
+    # Registrar fuente UTF-8
+    pdf.add_font("DejaVu", "", font_path, uni=True)
     pdf.set_font("DejaVu", "", 12)
 
-    # === Logo (si existe en el repo) ===
+    # Logo
     if os.path.exists("logo.png"):
         pdf.image("logo.png", x=80, y=10, w=50)
         pdf.ln(35)
 
-    # === Título ===
+    # Título
     pdf.set_font("DejaVu", "", 16)
     pdf.cell(0, 10, "🌱 Análisis de Suelo" if lang_code=="es" else "🌱 Análise de Solo", ln=True, align="C")
 
@@ -520,7 +525,7 @@ if ready:
     pdf.cell(0, 10, datetime.now().strftime("%d/%m/%Y %H:%M"), ln=True, align="C")
     pdf.ln(10)
 
-    # === Resumen ===
+    # Resumen
     pdf.set_font("DejaVu", "B", 13)
     pdf.cell(0, 10, "1️⃣ Resumen" if lang_code=="es" else "1️⃣ Resumo", ln=True)
     pdf.set_font("DejaVu", "", 11)
@@ -528,7 +533,7 @@ if ready:
         pdf.multi_cell(0, 8, f"- {item}")
     pdf.ln(5)
 
-    # === Interpretación ===
+    # Interpretación
     pdf.set_font("DejaVu", "B", 13)
     pdf.cell(0, 10, "2️⃣ Interpretación técnica" if lang_code=="es" else "2️⃣ Interpretação técnica", ln=True)
     pdf.set_font("DejaVu", "", 11)
@@ -536,25 +541,30 @@ if ready:
         pdf.multi_cell(0, 8, parrafo)
     pdf.ln(5)
 
-    # === Recomendaciones ===
+    # Recomendaciones
     pdf.set_font("DejaVu", "B", 13)
     pdf.cell(0, 10, "3️⃣ Recomendaciones" if lang_code=="es" else "3️⃣ Recomendações", ln=True)
     pdf.set_font("DejaVu", "", 11)
     for rec in recomendaciones:
         pdf.multi_cell(0, 8, rec)
 
-    # === Guardar PDF ===
+    # Guardar PDF
     out = "analisis_suelo.pdf"
     pdf.output(out)
     return out
 
 # ================================
-# Descarga CSV en sidebar
+# Generar PDF y mostrar botón de descarga
 # ================================
-with st.sidebar:
-    file_csv = TEXT_CONTENT[lang]["csv_file"]
-    if os.path.exists(file_csv) and os.path.getsize(file_csv) > 0:
-        with open(file_csv, "rb") as f:
-            st.download_button(TEXT_CONTENT[lang]["download_all"], f, file_name=file_csv, mime="text/csv", use_container_width=True)
+pdf_file = generar_pdf(lang, resumen_list, piezas, recs)
+
+with open(pdf_file, "rb") as f:
+    st.download_button(
+        label=t["pdf_button"],           # Texto multilenguaje
+        data=f,
+        file_name=pdf_file,              # Nombre del archivo
+        mime="application/pdf",
+        use_container_width=True
+    )
 
 
