@@ -310,7 +310,7 @@ def generar_excel(lang_code, resumen, interpretacion, recomendaciones):
 if "show_intro" not in st.session_state:
     st.session_state["show_intro"] = True
 
-lang = st.sidebar.radio("🌍 Idioma / Language", ["es", "pt"], index=0)
+
 t = TEXT_CONTENT[lang]
 
 if st.session_state["show_intro"]:
@@ -439,6 +439,7 @@ if ready:
     excel_file = generar_excel(lang, resumen_list, piezas, recs)
     with open(excel_file,"rb") as f:
         st.download_button(t["excel_button"], f, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
 
 
 
