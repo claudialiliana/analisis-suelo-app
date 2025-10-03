@@ -356,7 +356,6 @@ def mostrar_referencias(categoria: str, seleccion: str, lang_code: str):
 # ================================
 # APP
 # ================================
-lang = st.sidebar.radio("🌍 Idioma / Language", ["es", "pt"], index=0)
 t = TEXT_CONTENT[lang]
 
 st.title(t["app_title"])
@@ -424,6 +423,7 @@ if ready:
     pdf_file = generar_pdf(lang,resumen_list,piezas,recs)
     with open(pdf_file,"rb") as f:
         st.download_button(t["pdf_button"],f,file_name=pdf_file,mime="application/pdf")
+
 
 
 
