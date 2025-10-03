@@ -4,5 +4,7 @@ numpy
 Pillow
 opencv-python-headless
 fpdf
+fpdf2
+
 
 
