@@ -113,6 +113,7 @@ TEXT_CONTENT = {
 """,
         "upload_label": "📤 Subir imagen de suelo",
         "uploaded_caption": "📸 Imagen subida",
+        "compare_msg": "Selecciona tu opción comparando con la referencia:",
         "color_label": "🎨 Color del suelo",
         "texture_label": "🌾 Textura del suelo",
         "aggregation_label": "🧱 Forma / Estructura",
@@ -146,6 +147,7 @@ TEXT_CONTENT = {
 """,
         "upload_label": "📤 Enviar imagem do solo",
         "uploaded_caption": "📸 Imagem enviada",
+        "compare_msg": "Selecione sua opção comparando com a referência:",
         "color_label": "🎨 Cor do solo",
         "texture_label": "🌾 Textura do solo",
         "aggregation_label": "🧱 Forma / Estrutura",
@@ -259,7 +261,7 @@ if "show_intro" not in st.session_state:
 lang = st.sidebar.radio("🌍 Idioma / Language", ["es", "pt"], index=0)
 t = TEXT_CONTENT[lang]
 
-# Pantalla de bienvenida
+# Intro
 if st.session_state.get("show_intro", True):
     st.title(t["app_title"])
     st.markdown(t["intro"])
@@ -267,10 +269,33 @@ if st.session_state.get("show_intro", True):
         st.session_state["show_intro"] = False
         st.rerun()
     st.stop()
+# ================================
+# PÁGINA PRINCIPAL
+# ================================
+st.title(t["app_title"])   # 👈 ahora aparece una sola vez
 
-# Si ya pasó la intro, mostrar título general
-st.title(t["app_title"])
-st.markdown("👉 Selecciona tu opción comparando con la referencia:")
+# Imagen subida
+uploaded_file = st.file_uploader(t["upload_label"], type=["jpg", "jpeg", "png"])
+if uploaded_file:
+    st.image(uploaded_file, caption=t["uploaded_caption"], use_column_width=True)
+
+# ================================
+# SELECTORES con frases traducidas
+# ================================
+st.markdown(f"👉 {t['compare_msg']}")
+color = st.selectbox(t["color_label"], t["color_opts"])
+mostrar_referencias("color", color, lang)
+
+st.markdown(f"👉 {t['compare_msg']}")
+textura = st.selectbox(t["texture_label"], t["texture_opts"])
+mostrar_referencias("textura", textura, lang)
+
+st.markdown(f"👉 {t['compare_msg']}")
+estructura = st.selectbox(t["aggregation_label"], t["structure_opts"])
+mostrar_referencias("forma-estructura", estructura, lang)
+
+humedad = st.selectbox(t["moisture_label"], t["moisture_opts"])
+raices = st.selectbox(t["roots_label"], t["roots_opts"])
 
 # ================================
 # FUNCIÓN CARRUSEL
@@ -387,6 +412,7 @@ if ready:
     pdf_file = generar_pdf(lang, resumen_list, piezas, recs)
     with open(pdf_file, "rb") as f:
         st.download_button(t["pdf_button"], f, file_name=pdf_file, mime="application/pdf")
+
 
 
 
