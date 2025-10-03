@@ -94,6 +94,7 @@ STRUCTURE_FOLDER_MAP = {
         "solto": "suelto",
     },
 }
+
 # ================================
 # LOGO (sidebar)
 # ================================
@@ -101,7 +102,7 @@ if os.path.exists("logo.png"):
     st.sidebar.image("logo.png", use_container_width=True)
 else:
     st.sidebar.markdown("**Kawsaypacha – Tierra Viva**")
-# ================================
+
 # ================================
 # TEXTOS
 # ================================
@@ -120,7 +121,6 @@ Aquí podrás analizar algunas de sus principales características físicas y co
 
 Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual” para comprender mejor el suelo. 🚀
 """,
-        "app_title": "🌱 Análisis Visual de Suelos",
         "upload_label": "📤 Subir imagen de suelo",
         "uploaded_caption": "📸 Imagen subida",
         "color_label": "🎨 Color del suelo",
@@ -158,7 +158,6 @@ Aqui você poderá analisar algumas de suas principais características físicas
 
 Você terá uma experiência guiada passo a passo, como uma “lupa virtual” para compreender melhor o solo. 🚀
 """,
-        "app_title": "🌱 Análise Visual de Solos",
         "upload_label": "📤 Enviar imagem do solo",
         "uploaded_caption": "📸 Imagem enviada",
         "color_label": "🎨 Cor do solo",
@@ -183,6 +182,7 @@ Você terá uma experiência guiada passo a passo, como uma “lupa virtual” p
         "no_folder_msg": "Não existe pasta de referência para",
     },
 }
+
 # ================================
 # CONTROL DE PANTALLA INTRO
 # ================================
@@ -424,6 +424,7 @@ if ready:
     pdf_file = generar_pdf(lang,resumen_list,piezas,recs)
     with open(pdf_file,"rb") as f:
         st.download_button(t["pdf_button"],f,file_name=pdf_file,mime="application/pdf")
+
 
 
 
