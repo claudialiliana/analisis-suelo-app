@@ -109,6 +109,12 @@ TEXT_CONTENT = {
         "moisture_label": "💧 Humedad",
         "roots_label": "🌱 Presencia de raíces",
         "select_phrase": "👉 Selecciona tu opción comparando con la referencia:",
+        "summary_title": "1️⃣ Resumen",
+        "interpret_block_title": "2️⃣ Interpretación técnica",
+        "recs_title": "3️⃣ Recomendaciones de manejo",
+        "save_button": "💾 Guardar análisis",
+        "pdf_button": "📥 Descargar reporte en PDF",
+        "csv_file": "analisis_suelos.csv",
         "placeholder": "Seleccionar opción",
         "moisture_opts": ["Seleccionar opción", "Baja", "Media", "Alta"],
         "roots_opts": ["Seleccionar opción", "Ausentes", "Escasas", "Abundantes"],
@@ -128,6 +134,12 @@ TEXT_CONTENT = {
         "moisture_label": "💧 Umidade",
         "roots_label": "🌱 Presença de raízes",
         "select_phrase": "👉 Selecione sua opção comparando com a referência:",
+        "summary_title": "1️⃣ Resumo",
+        "interpret_block_title": "2️⃣ Interpretação técnica",
+        "recs_title": "3️⃣ Recomendações de manejo",
+        "save_button": "💾 Salvar análise",
+        "pdf_button": "📥 Baixar relatório em PDF",
+        "csv_file": "analises_solos.csv",
         "placeholder": "Selecionar opção",
         "moisture_opts": ["Selecionar opção", "Baixa", "Média", "Alta"],
         "roots_opts": ["Selecionar opção", "Ausentes", "Escassas", "Abundantes"],
@@ -138,82 +150,6 @@ TEXT_CONTENT = {
         "no_folder_msg": "Não existe pasta de referência para",
     },
 }
-
-# ================================
-# FUNCIÓN: Mostrar referencias (CARRUSEL)
-# ================================
-def mostrar_referencias(categoria: str, seleccion: str, lang_code: str):
-    """Carrusel de imágenes de referencias para confirmar la selección."""
-    if not seleccion or seleccion == TEXT_CONTENT[lang_code]["placeholder"]:
-        return
-
-    # Resolver la carpeta real según idioma y categoría
-    if categoria == "color":
-        carpeta = COLOR_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
-    elif categoria == "textura":
-        carpeta = TEXTURE_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
-    elif categoria == "forma-estructura":
-        carpeta = STRUCTURE_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
-    else:
-        carpeta = str(seleccion).lower()
-
-    base_path = os.path.join("referencias", categoria, carpeta)
-    if os.path.exists(base_path):
-        imagenes = sorted(
-            glob.glob(os.path.join(base_path, "*.png")) +
-            glob.glob(os.path.join(base_path, "*.jpg")) +
-            glob.glob(os.path.join(base_path, "*.jpeg"))
-        )
-        if imagenes:
-            key_carousel = f"carousel_{categoria}_{carpeta}"
-            if key_carousel not in st.session_state:
-                st.session_state[key_carousel] = 0
-
-            col1, col2, col3 = st.columns([1, 3, 1])
-            with col1:
-                if st.button("⬅️", key=f"prev_{key_carousel}"):
-                    st.session_state[key_carousel] = (st.session_state[key_carousel] - 1) % len(imagenes)
-            with col3:
-                if st.button("➡️", key=f"next_{key_carousel}"):
-                    st.session_state[key_carousel] = (st.session_state[key_carousel] + 1) % len(imagenes)
-
-            img_path = imagenes[st.session_state[key_carousel]]
-            st.image(img_path, caption=f"{seleccion} ({st.session_state[key_carousel]+1}/{len(imagenes)})", width=320)
-        else:
-            st.warning(f"{TEXT_CONTENT[lang_code]['no_images_msg']}: {base_path}")
-    else:
-        st.info(f"{TEXT_CONTENT[lang_code]['no_folder_msg']} «{seleccion}» → {base_path}")
-
-# ================================
-# UI (idioma, título y selectores)
-# ================================
-lang = st.sidebar.radio("🌍 Idioma / Language", ["es", "pt"], index=0)
-t = TEXT_CONTENT[lang]
-
-st.title(t["app_title"])
-
-uploaded_file = st.file_uploader(t["upload_label"], type=["jpg", "jpeg", "png"])
-if uploaded_file:
-    st.image(uploaded_file, caption=t["uploaded_caption"], use_container_width=True)
-
-# Color
-st.markdown(f"**{t['select_phrase']}**")
-color = st.selectbox(t["color_label"], t["color_opts"])
-mostrar_referencias("color", color, lang)
-
-# Textura
-st.markdown(f"**{t['select_phrase']}**")
-textura = st.selectbox(t["texture_label"], t["texture_opts"])
-mostrar_referencias("textura", textura, lang)
-
-# Estructura
-st.markdown(f"**{t['select_phrase']}**")
-estructura = st.selectbox(t["aggregation_label"], t["structure_opts"])
-mostrar_referencias("forma-estructura", estructura, lang)
-
-# Humedad y raíces
-humedad = st.selectbox(t["moisture_label"], t["moisture_opts"])
-raices = st.selectbox(t["roots_label"], t["roots_opts"])
 
 # ================================
 # INTERPRETACIONES DETALLADAS
@@ -334,16 +270,16 @@ def generar_pdf(lang_code, resumen, interpretacion, recomendaciones):
 # FUNCIÓN CARRUSEL
 # ================================
 def mostrar_referencias(categoria: str, seleccion: str, lang_code: str):
-    if seleccion == TEXT_CONTENT[lang_code]["placeholder"]:
+    if not seleccion or seleccion == TEXT_CONTENT[lang_code]["placeholder"]:
         return
     if categoria == "color":
-        carpeta = COLOR_FOLDER_MAP[lang_code].get(seleccion, seleccion.lower())
+        carpeta = COLOR_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
     elif categoria == "textura":
-        carpeta = TEXTURE_FOLDER_MAP[lang_code].get(seleccion, seleccion.lower())
+        carpeta = TEXTURE_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
     elif categoria == "forma-estructura":
-        carpeta = STRUCTURE_FOLDER_MAP[lang_code].get(seleccion, seleccion.lower())
+        carpeta = STRUCTURE_FOLDER_MAP[lang_code].get(seleccion, str(seleccion).lower())
     else:
-        carpeta = seleccion.lower()
+        carpeta = str(seleccion).lower()
     base_path = os.path.join("referencias", categoria, carpeta)
     if os.path.exists(base_path):
         imagenes = sorted(
@@ -352,7 +288,7 @@ def mostrar_referencias(categoria: str, seleccion: str, lang_code: str):
             glob.glob(os.path.join(base_path, "*.jpeg"))
         )
         if imagenes:
-            key_carousel = f"carousel_{categoria}_{seleccion}"
+            key_carousel = f"carousel_{categoria}_{carpeta}"
             if key_carousel not in st.session_state:
                 st.session_state[key_carousel] = 0
             col1, col2, col3 = st.columns([1, 3, 1])
@@ -363,11 +299,11 @@ def mostrar_referencias(categoria: str, seleccion: str, lang_code: str):
                 if st.button("➡️", key=f"next_{key_carousel}"):
                     st.session_state[key_carousel] = (st.session_state[key_carousel] + 1) % len(imagenes)
             img_path = imagenes[st.session_state[key_carousel]]
-            st.image(img_path, caption=f"{seleccion} ({st.session_state[key_carousel]+1}/{len(imagenes)})", width=300)
+            st.image(img_path, caption=f"{seleccion} ({st.session_state[key_carousel]+1}/{len(imagenes)})", width=320)
         else:
-            st.warning(f"{TEXT_CONTENT[lang_code]['no_images_msg']} {base_path}")
+            st.warning(f"{TEXT_CONTENT[lang_code]['no_images_msg']}: {base_path}")
     else:
-        st.info(f"{TEXT_CONTENT[lang_code]['no_folder_msg']} {seleccion}")
+        st.info(f"{TEXT_CONTENT[lang_code]['no_folder_msg']} «{seleccion}» → {base_path}")
 
 # ================================
 # APP
@@ -410,30 +346,36 @@ if ready:
         f"{t['moisture_label']}: {humedad}",
         f"{t['roots_label']}: {raices}",
     ]
-
-    st.subheader(t["summary_title"])
-    for r in resumen_list: st.write(r)
-
-    st.subheader(t["interpret_block_title"])
     interp = INTERP[lang]
-    detalles = [
-        interp["color"].get(color,""),
-        interp["texture"].get(textura,""),
-        interp["structure"].get(estructura,""),
-        interp["moisture"].get(humedad,""),
-        interp["roots"].get(raices,""),
+    piezas = [
+        interp["color"].get(color, ""),
+        interp["texture"].get(textura, ""),
+        interp["structure"].get(estructura, ""),
+        interp["moisture"].get(humedad, ""),
+        interp["roots"].get(raices, ""),
     ]
-    for d in detalles:
-        if d: st.write(f"- {d}")
-
-    st.subheader(t["recs_title"])
     recs = []
-    if humedad in ["Alta","Baixa"]:
-        recs.append("⚠️ Revisar drenaje del suelo / Revisar drenagem do solo")
-    if humedad in ["Baja","Baixa"]:
-        recs.append("💧 Implementar riego o coberturas / Implementar irrigação ou coberturas")
-    if textura in ["arcilloso","
-
+    if humedad in ["Alta","Baixa","Alta"]: recs.append("⚠️ Atención al manejo de agua")
+    if not recs: recs.append("Mantener buenas prácticas de conservación.")
+    st.markdown(f"### {t['summary_title']}")
+    for r in resumen_list: st.write(f"- {r}")
+    st.markdown(f"### {t['interpret_block_title']}")
+    st.write(" ".join(piezas))
+    st.markdown(f"### {t['recs_title']}")
+    for r in recs: st.write(f"- {r}")
+    # Guardar CSV
+    if st.button(t["save_button"]):
+        file_csv = t["csv_file"]
+        headers_exist = os.path.exists(file_csv) and os.path.getsize(file_csv)>0
+        with open(file_csv,"a",newline="",encoding="utf-8") as f:
+            writer = csv.writer(f)
+            if not headers_exist: writer.writerow(["Fecha","Idioma","Color","Textura","Estructura","Humedad","Raíces"])
+            writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"),lang,color,textura,estructura,humedad,raices])
+        st.success("✅ Análisis guardado en CSV")
+    # PDF
+    pdf_file = generar_pdf(lang,resumen_list,piezas,recs)
+    with open(pdf_file,"rb") as f:
+        st.download_button(t["pdf_button"],f,file_name=pdf_file,mime="application/pdf")
 
 
 
