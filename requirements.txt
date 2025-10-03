@@ -1,8 +1,9 @@
 streamlit
-fpdf2
-Pillow
+pillow
 numpy
 pandas
 opencv-python-headless
+openpyxl
+
 
 
