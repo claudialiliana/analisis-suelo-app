@@ -108,6 +108,7 @@ else:
 TEXT_CONTENT = {
     "es": {
         "app_title": "🌱 Análisis Visual de Suelos",
+        "start_btn": "🚀 Comenzar análisis",
         "intro": """
 **Bienvenido/a a esta plataforma educativa para explorar el mundo del suelo de manera visual e interactiva.**
 Aquí podrás analizar algunas de sus principales características físicas y comprender cómo influyen en su interpretación.
@@ -143,8 +144,9 @@ Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual�
         "no_images_msg": "No se encontraron imágenes en la carpeta",
         "no_folder_msg": "No existe carpeta de referencia para",
     },
-    "pt": {
+   "pt": {
         "app_title": "🌱 Análise Visual de Solos",
+        "start_btn": "🚀 Iniciar análise",
         "intro": """
 **Bem-vindo(a) a esta plataforma educativa para explorar o mundo do solo de forma visual e interativa.**
 Aqui você poderá analisar algumas de suas principais características físicas e entender como elas influenciam na interpretação do solo.
@@ -181,7 +183,22 @@ Você terá uma experiência guiada passo a passo, como uma “lupa virtual” p
         "no_folder_msg": "Não existe pasta de referência para",
     },
 }
+# ================================
+# CONTROL DE PANTALLA INTRO
+# ================================
+if "show_intro" not in st.session_state:
+    st.session_state["show_intro"] = True
 
+lang = st.sidebar.radio("🌍 Idioma / Language", ["es", "pt"], index=0)
+t = TEXT_CONTENT[lang]
+
+if st.session_state["show_intro"]:
+    st.title(t["app_title"])
+    st.markdown(t["intro"])
+    if st.button(t["start_btn"]):
+        st.session_state["show_intro"] = False
+        st.rerun()
+    st.stop()
 # ================================
 # INTERPRETACIONES DETALLADAS
 # ================================
@@ -407,6 +424,7 @@ if ready:
     pdf_file = generar_pdf(lang,resumen_list,piezas,recs)
     with open(pdf_file,"rb") as f:
         st.download_button(t["pdf_button"],f,file_name=pdf_file,mime="application/pdf")
+
 
 
 
