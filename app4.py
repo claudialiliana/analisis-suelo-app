@@ -35,6 +35,7 @@ div.stButton > button:hover {
 }
 </style>
 """, unsafe_allow_html=True)
+
 # ================================
 # LOGO (sidebar)
 # ================================
@@ -42,6 +43,7 @@ if os.path.exists("logo.png"):
     st.sidebar.image("logo.png", use_container_width=True)
 else:
     st.sidebar.markdown("**Kawsaypacha – Tierra Viva**")
+
 # ================================
 # TEXTOS
 # ================================
@@ -52,6 +54,13 @@ TEXT_CONTENT = {
         "intro": """
 **Bienvenido/a a esta plataforma educativa para explorar el mundo del suelo de manera visual e interactiva.**
 Aquí podrás analizar algunas de sus principales características físicas y comprender cómo influyen en su interpretación.
+
+👉 Elige primero el **idioma que prefieras** y luego:
+1. **Sube una imagen de suelo** que quieras analizar.  
+2. **Selecciona sus características** (color, textura, estructura, humedad, raíces).  
+3. **Compara con las referencias visuales** que irán apareciendo en cada categoría.
+
+Tendrás una experiencia guiada paso a paso, como si fuera una “lupa virtual” para comprender mejor el suelo. 🚀
 """,
         "upload_label": "📤 Subir imagen de suelo",
         "uploaded_caption": "📸 Imagen subida",
@@ -80,6 +89,13 @@ Aquí podrás analizar algunas de sus principales características físicas y co
         "intro": """
 **Bem-vindo(a) a esta plataforma educativa para explorar o mundo do solo de forma visual e interativa.**
 Aqui você poderá analisar algumas de suas principais características físicas e entender como elas influenciam na interpretação do solo.
+
+👉 Primeiro, escolha o **idioma de sua preferência** e depois:
+1. **Envie uma imagem do solo** que deseja analisar.  
+2. **Selecione suas características** (cor, textura, estrutura, umidade, raízes).  
+3. **Compare com as referências visuais** que aparecerão em cada categoria.
+
+Você terá uma experiência guiada passo a passo, como uma “lupa virtual” para compreender melhor o solo. 🚀
 """,
         "upload_label": "📤 Enviar imagem do solo",
         "uploaded_caption": "📸 Imagem enviada",
@@ -298,7 +314,6 @@ if ready:
     excel_file = generar_excel(lang, resumen_list, piezas, recs)
     with open(excel_file,"rb") as f:
         st.download_button(t["excel_button"], f, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
 
 
 
